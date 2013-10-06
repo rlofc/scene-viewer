@@ -1,0 +1,113 @@
+form sceneSettings
+{
+    theme = res/editor.theme
+    autoWidth = true
+    autoHeight = true
+    consumeInputEvents = false
+
+    container basicSettings
+    {
+        style = sceneProps
+        alignment = ALIGN_TOP_RIGHT
+        width = 210
+        autoHeight = true
+        scroll = SCROLL_VERTICAL
+        scrollBarsAutoHide = false
+
+        container widgets 
+        {
+           alignment = ALIGN_TOP_LEFT
+           autoWidth = true
+           height = 500
+           layout = LAYOUT_VERTICAL
+           label titleLight
+           {
+               style = title
+               size = 150, 50
+               text = Scene Light
+           }
+
+           slider lvx
+           {
+               style = noBorder
+               size = 150, 30
+               orientation = HORIZONTAL
+               min = 0
+               max = 1
+               value = 1
+               textAlignment = ALIGN_TOP_LEFT
+               valueTextVisible = true
+               valueTextAlignment = ALIGN_TOP_RIGHT
+               valueTextPrecision = 2
+           }
+
+           slider lvy : lvx
+           {
+           }
+           slider lvz : lvx
+           {
+           }
+
+
+           label titleClearColor : titleLight
+           {
+               text = Clear Color
+           }
+
+           slider ccRed
+           {
+               style = noBorder
+               size = 150, 30
+               orientation = HORIZONTAL
+               min = 0
+               max = 1
+               text = Red
+               textAlignment = ALIGN_TOP_LEFT
+               valueTextVisible = true
+               valueTextAlignment = ALIGN_TOP_RIGHT
+               valueTextPrecision = 2            
+               consumeInputEvents = false
+           }
+
+           slider ccGreen : ccRed
+           {
+               text = Green
+           }
+           slider ccBlue : ccRed
+           {
+               text = Blue
+           }
+
+           label titleAnimations : titleLight
+           {
+               text = Animations
+           }
+
+           button playAll
+           {
+              consumeInputEvents = true
+              style = buttonStyle
+              width = 140
+              height = 40
+              x = 100
+              text = Play all
+           }
+           button playSelected
+           {
+              consumeInputEvents = true
+              style = buttonStyle
+              width = 140
+              height = 40
+              x = 100
+              text = Play selected
+           }
+        }
+        image test
+        {
+           alignment = ALIGN_BOTTOM_HCENTER
+           width = 73
+           height = 25 
+           path = res/rlofc.png
+        }
+	 }
+}
