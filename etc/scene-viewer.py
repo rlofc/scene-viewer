@@ -46,7 +46,7 @@ class SceneView(bpy.types.Operator):
         sve = bpy.context.scene.viewer_path
         svp = os.path.dirname(sve)
         enc = bpy.context.scene.encoder_path
-        sfp = svp+"/res/scene"
+        sfp = os.path.join(svp,"res","scene")
         bpy.ops.export_scene.fbx(filepath=sfp+".fbx", 
                                  check_existing=True, 
                                  filter_glob="*.fbx", 
@@ -79,7 +79,7 @@ class SceneView(bpy.types.Operator):
         subprocess.call(args)
         for img in bpy.data.images.keys():    
             if bpy.data.images[img].source=='FILE':
-                shutil.copy(bpy.data.images[img].filepath,svp+"res/")
+                shutil.copy(bpy.data.images[img].filepath,os.path.join(svp,"res"))
         subprocess.Popen([sve],cwd=svp)
         return {"FINISHED"}
 
