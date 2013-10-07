@@ -32,7 +32,7 @@ form sceneSettings
                style = noBorder
                size = 150, 30
                orientation = HORIZONTAL
-               min = 0
+               min = -1
                max = 1
                value = 1
                textAlignment = ALIGN_TOP_LEFT
