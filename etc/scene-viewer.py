@@ -72,7 +72,9 @@ class SceneView(bpy.types.Operator):
                                  use_metadata=True)
         args = [enc]
         if bpy.context.scene.encoder_group:
-            args.append("g:auto")
+            args.append("-g:auto")
+        else:
+            args.append("-g:none")
         if bpy.context.scene.encoder_genmat:
             args.append("-m")
         args.append(sfp+".fbx")
