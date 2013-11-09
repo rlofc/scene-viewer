@@ -65,8 +65,6 @@ class SceneView(bpy.types.Operator):
                                  use_anim_optimize=False, 
                                  anim_optimize_precision=6.0, 
                                  path_mode='AUTO', 
-                                 use_rotate_workaround=False, 
-                                 xna_validate=False, 
                                  batch_mode='OFF', 
                                  use_batch_own_dir=True, 
                                  use_metadata=True)
