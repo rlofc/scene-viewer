@@ -87,6 +87,7 @@ bool SceneViewer::startAnims(Node* node)
    if (node->getModel()) {
       this->playNodeAmination(node);
    }
+   return false;
 }
 
 bool SceneViewer::drawScene(Node* node)
@@ -166,9 +167,10 @@ bool SceneViewer::checkScene(Node* node, Ray* ray)
          _selected = node;
          _bPlaySelected->setText(node->getId());
          _bPlaySelected->setEnabled(true);
+         return true;
       }
-
    }
+   return false;
 }
 
 void SceneViewer::touchEvent(Touch::TouchEvent evt, int x, int y, unsigned int contactIndex)
