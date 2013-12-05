@@ -58,6 +58,7 @@ private:
    /**
      * Draws the scene each frame.
      */
+   bool setLights(Node* node);
    bool drawScene(Node* node);
    bool startAnims(Node* node);
 
@@ -70,6 +71,11 @@ private:
     * User-defined clear color
     */
    Vector4 _clearColor;
+
+   /**
+    * User-defined light color
+    */
+   Vector3 _directionalLightVector;
 
    /**
     * Currently selected node (or NULL)

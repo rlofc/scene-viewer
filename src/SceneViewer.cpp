@@ -1,4 +1,5 @@
 #include "SceneViewer.h"
+#define FOREACH(I,ITEMS) I=ITEMS[0]; for (int i = 0 ; i < sizeof(ITEMS)/sizeof(ITEMS[0]) ; i++,I=ITEMS[i])
 
 // Declare our game instance
 SceneViewer game;
@@ -22,8 +23,16 @@ void SceneViewer::initialize()
       cam->setAspectRatio(getAspectRatio());
       cam->getNode()->rotateY(MATH_DEG_TO_RAD(-90));
    }
-   Node * light = _scene->findNode("Spot");
-   if (light) _scene->setLightDirection(light->getForwardVector());
+
+   // Try to use any significant light source for the scene light vector.
+   // This is just a temporary hack until I manage to tap into the
+   // material file from the python addon.
+   Node * light = _scene->findNode("Spot") ? _scene->findNode("Spot") :
+                                             _scene->findNode("Area") ? _scene->findNode("Area") :
+                                                                        _scene->findNode("Sun") ? _scene->findNode("Sun") : 0;
+   if (light) _directionalLightVector = light->getForwardVector();
+
+   // Setup the form and callbacks
    _form = Form::create("res/editor.form");
    _sliderLightVectorX = (Slider *)_form->getControl("lvx");
    _sliderLightVectorY = (Slider *)_form->getControl("lvy");
@@ -35,19 +44,18 @@ void SceneViewer::initialize()
    _bPlaySelected = (Button *)_form->getControl("playSelected");
    _bPlaySelected->setEnabled(false);
 
-   Vector3 lv = _scene->getLightDirection();
-   _sliderLightVectorX->setValue(lv.x);
-   _sliderLightVectorY->setValue(lv.y);
-   _sliderLightVectorZ->setValue(lv.z);
+   Slider * sliders[] = { _sliderLightVectorX, _sliderLightVectorY, _sliderLightVectorZ,
+                        _sliderClearColorRed, _sliderClearColorGreen, _sliderClearColorBlue }, *s;
+   FOREACH(s, sliders) {
+      s->addListener(this, Listener::VALUE_CHANGED);
+   }
 
-   _sliderLightVectorX->addListener(this, Listener::VALUE_CHANGED);
-   _sliderLightVectorY->addListener(this, Listener::VALUE_CHANGED);
-   _sliderLightVectorZ->addListener(this, Listener::VALUE_CHANGED);
-   _sliderClearColorRed->addListener(this, Listener::VALUE_CHANGED);
-   _sliderClearColorGreen->addListener(this, Listener::VALUE_CHANGED);
-   _sliderClearColorBlue->addListener(this, Listener::VALUE_CHANGED);
    _bPlayAll->addListener(this, Listener::CLICK);
    _bPlaySelected->addListener(this, Listener::CLICK);
+
+   // Set the metarial lighting
+   _scene->visit(this, &SceneViewer::setLights);
+
    _clearColor = Vector4::zero();
 }
 
@@ -55,6 +63,16 @@ void SceneViewer::finalize()
 {
    SAFE_RELEASE(_form);
    SAFE_RELEASE(_scene);
+}
+
+bool SceneViewer::setLights(Node* node)
+{
+   if (node->getModel()) {
+      Material * m = node->getModel()->getMaterial(0);
+      m->getTechnique()->getParameter("u_directionalLightColor[0]")->setValue(Vector3(1,1,1));
+      m->getTechnique()->getParameter("u_directionalLightDirection[0]")->setValue(_directionalLightVector);
+   }
+   return true;
 }
 
 void SceneViewer::update(float elapsedTime)
@@ -127,19 +145,16 @@ void SceneViewer::controlEvent(Control *control, EventType evt) {
       break;
    case Listener::VALUE_CHANGED:
       if (control==_sliderLightVectorX) {
-         Vector3 lv = _scene->getLightDirection();
-         lv.x = _sliderLightVectorX->getValue();
-         _scene->setLightDirection(lv);
+         _directionalLightVector.x =  _sliderLightVectorX->getValue();
+         _scene->visit(this, &SceneViewer::setLights);
       }
       if (control==_sliderLightVectorY) {
-         Vector3 lv = _scene->getLightDirection();
-         lv.y = _sliderLightVectorY->getValue();
-         _scene->setLightDirection(lv);
+         _directionalLightVector.y =  _sliderLightVectorY->getValue();
+         _scene->visit(this, &SceneViewer::setLights);
       }
       if (control==_sliderLightVectorZ) {
-         Vector3 lv = _scene->getLightDirection();
-         lv.z = _sliderLightVectorZ->getValue();
-         _scene->setLightDirection(lv);
+         _directionalLightVector.z =  _sliderLightVectorZ->getValue();
+         _scene->visit(this, &SceneViewer::setLights);
       }
       if (control==_sliderClearColorRed) {
          _clearColor.x = _sliderClearColorRed->getValue();
