@@ -14,6 +14,7 @@ form sceneSettings
         scroll = SCROLL_VERTICAL
         scrollBarsAutoHide = false
 
+        consumeInputEvents = false
         container widgets 
         {
            alignment = ALIGN_TOP_LEFT
@@ -66,7 +67,7 @@ form sceneSettings
                valueTextVisible = true
                valueTextAlignment = ALIGN_TOP_RIGHT
                valueTextPrecision = 2            
-               consumeInputEvents = false
+               consumeInputEvents = true
            }
 
            slider ccGreen : ccRed
@@ -102,7 +103,7 @@ form sceneSettings
               text = Play selected
            }
         }
-        image test
+        image signature
         {
            alignment = ALIGN_BOTTOM_HCENTER
            width = 73
