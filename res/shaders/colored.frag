@@ -3,7 +3,7 @@ precision highp float;
 #endif
 
 #ifndef DIRECTIONAL_LIGHT_COUNT
-#define DIRECTIONAL_LIGHT_COUNT 0
+#define DIRECTIONAL_LIGHT_COUNT 1
 #endif
 #ifndef SPOT_LIGHT_COUNT
 #define SPOT_LIGHT_COUNT 0
