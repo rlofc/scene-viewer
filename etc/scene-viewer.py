@@ -22,6 +22,7 @@ bpy.types.Scene.encoder_group = bpy.props.BoolProperty(name="Group Animations",d
 bpy.types.Scene.encoder_genmat = bpy.props.BoolProperty(name="Generate Materials",default=True)
 bpy.types.Scene.encoder_path = bpy.props.StringProperty(name="Encoder Path",subtype="FILE_PATH",default="")
 bpy.types.Scene.viewer_path = bpy.props.StringProperty(name="Viewer Path",subtype="FILE_PATH",default="")
+bpy.types.Scene.game_path = bpy.props.StringProperty(name="Workspace",subtype="FILE_PATH",default="")
 
 class SceneView(bpy.types.Operator):
     """the GamePlay 3D scene viewer"""
@@ -30,8 +31,9 @@ class SceneView(bpy.types.Operator):
     
     @classmethod
     def poll(cls, context):
-        svp = bpy.context.scene.viewer_path
-        enc = bpy.context.scene.encoder_path
+        svp  = bpy.context.scene.viewer_path
+        enc  = bpy.context.scene.encoder_path
+        gdir = bpy.context.scene.game_path
         try:
             with open(svp): pass
         except IOError:
@@ -40,11 +42,16 @@ class SceneView(bpy.types.Operator):
             with open(enc): pass
         except IOError:
             return False
-        return True
+        if gdir!='':
+            return os.path.isdir(gdir)
+        else:
+            return True
     
     def execute(self, context):
         sve = bpy.context.scene.viewer_path
-        svp = os.path.dirname(sve)
+        svp = bpy.context.scene.game_path
+        if svp=='': 
+            svp = os.path.dirname(sve)
         enc = bpy.context.scene.encoder_path
         sfp = os.path.join(svp,"res","scene")
         bpy.ops.export_scene.fbx(filepath=sfp+".fbx", 
@@ -94,6 +101,7 @@ class GameplayPanel(bpy.types.Panel):
         layout = self.layout
         layout.prop(context.scene, "encoder_path")
         layout.prop(context.scene, "viewer_path")
+        layout.prop(context.scene, "game_path")
         layout.prop(context.scene, "encoder_genmat")
         layout.prop(context.scene, "encoder_group")
         layout.operator("scene.gameplayview")
