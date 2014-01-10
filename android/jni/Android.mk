@@ -14,7 +14,7 @@
 #
 
 SAMPLE_PATH := $(call my-dir)/../../src
-LIBPNG_PATH := ../../GamePlay/external-deps/libpng/lib/android/arm
+PNG_PATH := ../../GamePlay/external-deps/png/lib/android/arm
 ZLIB_PATH := ../../GamePlay/external-deps/zlib/lib/android/arm
 LUA_PATH := ../../GamePlay/external-deps/lua/lib/android/arm
 BULLET_PATH := ../../GamePlay/external-deps/bullet/lib/android/arm
@@ -29,7 +29,7 @@ LOCAL_SRC_FILES := libgameplay.a
 include $(PREBUILT_STATIC_LIBRARY)
 
 # libpng
-LOCAL_PATH := $(LIBPNG_PATH)
+LOCAL_PATH := $(PNG_PATH)
 include $(CLEAR_VARS)
 LOCAL_MODULE    := libpng 
 LOCAL_SRC_FILES := libpng.a
@@ -78,7 +78,7 @@ LOCAL_MODULE    := scene-viewer
 LOCAL_SRC_FILES := ../../GamePlay/gameplay/src/gameplay-main-android.cpp SceneViewer.cpp
 
 LOCAL_LDLIBS    := -llog -landroid -lEGL -lGLESv2 -lOpenSLES
-LOCAL_CFLAGS    := -D__ANDROID__ -Wno-psabi -I"../../GamePlay/external-deps/lua/include" -I"../../GamePlay/external-deps/bullet/include" -I"../../GamePlay/external-deps/libpng/include" -I"../../GamePlay/external-deps/oggvorbis/include" -I"../../GamePlay/external-deps/openal/include" -I"../../GamePlay/gameplay/src"
+LOCAL_CFLAGS    := -D__ANDROID__ -Wno-psabi -I"../../GamePlay/external-deps/lua/include" -I"../../GamePlay/external-deps/bullet/include" -I"../../GamePlay/external-deps/png/include" -I"../../GamePlay/external-deps/oggvorbis/include" -I"../../GamePlay/external-deps/openal/include" -I"../../GamePlay/gameplay/src"
 
 LOCAL_STATIC_LIBRARIES := android_native_app_glue libgameplay libpng libzlib liblua libbullet libvorbis libOpenAL
 
