@@ -86,7 +86,7 @@ class SceneView(bpy.types.Operator):
         args.append(sfp+".fbx")
         subprocess.call(args)
         for img in bpy.data.images.keys():    
-            if bpy.data.images[img].source=='FILE':
+            if bpy.data.images[img].source=='FILE' and os.path.dirname(bpy.data.images[img].filepath)!=os.path.join(svp,"res"):
                 shutil.copy(bpy.data.images[img].filepath,os.path.join(svp,"res"))
         subprocess.Popen([sve],cwd=svp)
         return {"FINISHED"}
