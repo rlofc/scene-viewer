@@ -101,6 +101,24 @@ private:
    Slider* _acb;
    Button* _bPlayAll;
    Button* _bPlaySelected;
+   CheckBox* _gridCheckBox;
+
+   // View control
+   bool  _shift_key;
+   bool  _control_key;
+   bool  _rotate_active;
+   bool  _pan_active;
+   bool  _zoom_active;
+   int   _touch_x;
+   int   _touch_y;
+   bool  _grid_on;
+
+   void rotateCameraLocal(float x, float y);
+   void rotateCameraView(float x, float y);
+   void zoomCameraView(float x, float y);
+   void panCameraView(float x, float y);
+   void lookAt(Node* node, const Vector3& eye, const Vector3& target, const Vector3& up);
+   Model* createGridModel(unsigned int lineCount = 41);
 
    /**
     * @brief Plays animations for the specified node

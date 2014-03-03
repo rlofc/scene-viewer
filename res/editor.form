@@ -19,7 +19,7 @@ form sceneSettings
         {
            alignment = ALIGN_TOP_LEFT
            autoWidth = true
-           height = 500
+           height = 600
            layout = LAYOUT_VERTICAL
            label titleLight
            {
@@ -62,6 +62,7 @@ form sceneSettings
                orientation = HORIZONTAL
                min = 0
                max = 1
+               value = 0
                text = Red
                textAlignment = ALIGN_TOP_LEFT
                valueTextVisible = true
@@ -78,6 +79,20 @@ form sceneSettings
            {
                text = Blue
            }
+
+           checkbox gridCheckBox
+		     {
+               alignment = ALIGN_BOTTOM_HCENTER
+               textAlignment = ALIGN_HCENTER 
+               style = noBorder
+               size = 150, 10
+               height = 30
+               orientation = HORIZONTAL
+			      text = Grid
+			      value = true
+		     }
+
+
 
            label titleAnimations : titleLight
            {
@@ -99,10 +114,11 @@ form sceneSettings
               style = buttonStyle
               width = 140
               height = 40
-              x = 100
+              x = 200
               text = Play selected
            }
         }
+
         image signature
         {
            alignment = ALIGN_BOTTOM_HCENTER
