@@ -14,7 +14,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import bpy,subprocess,shutil,os
+import bpy,subprocess,shutil,os,sys
     
 bl_info = {"name": "GamePlay 3D Scene Viewer", "category": "User"}
 
@@ -28,14 +28,21 @@ class SceneView(bpy.types.Operator):
     """the GamePlay 3D scene viewer"""
     bl_idname = "scene.gameplayview"
     bl_label = "Preview"
-    
+
+    @staticmethod    
+    def isMacApp(svp):
+        return sys.platform == 'darwin' and \
+               os.path.isdir(svp) and \
+               (svp.endswith('.app') or svp.endswith('.app/'))
+
     @classmethod
     def poll(cls, context):
         svp  = bpy.context.scene.viewer_path
         enc  = bpy.context.scene.encoder_path
         gdir = bpy.context.scene.game_path
         try:
-            with open(svp): pass
+            if not SceneView.isMacApp(svp):
+                with open(svp): pass
         except IOError:
             return False
         try:
@@ -50,10 +57,24 @@ class SceneView(bpy.types.Operator):
     def execute(self, context):
         sve = bpy.context.scene.viewer_path
         svp = bpy.context.scene.game_path
-        if svp=='': 
-            svp = os.path.dirname(sve)
+
+        macApp = SceneView.isMacApp(sve)
+        if macApp and sve.endswith('.app/'):
+            sve = sve[:-1]
+
+        if svp=='':
+            if macApp:
+                svp = os.path.normpath(os.path.join(sve, os.pardir))
+            else:
+                svp = os.path.dirname(sve)
+
+        if macApp:
+            resdir = os.path.join(sve, 'Contents', 'Resources', 'res')
+        else:
+            resdir = os.path.join(svp, 'res')
+
         enc = bpy.context.scene.encoder_path
-        sfp = os.path.join(svp,"res","scene")
+        sfp = os.path.join(resdir,"scene")
         bpy.ops.export_scene.fbx(filepath=sfp+".fbx", 
                                  check_existing=True, 
                                  filter_glob="*.fbx", 
@@ -86,9 +107,14 @@ class SceneView(bpy.types.Operator):
         args.append(sfp+".fbx")
         subprocess.call(args)
         for img in bpy.data.images.keys():    
-            if bpy.data.images[img].source=='FILE' and os.path.dirname(bpy.data.images[img].filepath)!=os.path.join(svp,"res"):
-                shutil.copy(bpy.data.images[img].filepath,os.path.join(svp,"res"))
-        subprocess.Popen([sve],cwd=svp)
+            if bpy.data.images[img].source=='FILE' and os.path.dirname(bpy.data.images[img].filepath) != resdir:
+                shutil.copy(bpy.data.images[img].filepath,resdir)
+
+        if macApp:
+            subprocess.call([ '/usr/bin/open', sve ], cwd=svp)
+        else:
+            subprocess.call([ sve ], cwd=svp)
+
         return {"FINISHED"}
 
 class GameplayPanel(bpy.types.Panel):
