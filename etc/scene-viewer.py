@@ -53,7 +53,8 @@ class SceneView(bpy.types.Operator):
         if svp=='': 
             svp = os.path.dirname(sve)
         enc = bpy.context.scene.encoder_path
-        sfp = os.path.join(svp,"res","scene")
+        barename = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0]
+        sfp = os.path.join(svp,"res",barename)
         bpy.ops.export_scene.fbx(filepath=sfp+".fbx", 
                                  check_existing=True, 
                                  filter_glob="*.fbx", 
@@ -88,7 +89,7 @@ class SceneView(bpy.types.Operator):
         for img in bpy.data.images.keys():    
             if bpy.data.images[img].source=='FILE' and os.path.dirname(bpy.data.images[img].filepath)!=os.path.join(svp,"res"):
                 shutil.copy(bpy.data.images[img].filepath,os.path.join(svp,"res"))
-        subprocess.Popen([sve],cwd=svp)
+        subprocess.Popen([sve,barename],cwd=svp)
         return {"FINISHED"}
 
 class GameplayPanel(bpy.types.Panel):
