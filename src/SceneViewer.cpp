@@ -25,7 +25,17 @@ SceneViewer::SceneViewer()
 void SceneViewer::initialize()
 {
    // Load game scene from file
-   _scene = Scene::load("res/scene.gpb");
+
+    int argc; 
+    char **argv;
+    this->getArguments(&argc, &argv);
+    if (argc<2) {
+       _scene = Scene::load("res/scene.gpb");
+    } else {
+        std::string path = std::string("res/")+std::string(argv[1])+std::string(".gpb");
+        puts(path.c_str());
+        _scene = Scene::load(path.c_str());
+    }
 
    _shift_key = false;
    _control_key = false;

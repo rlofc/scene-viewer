@@ -41,8 +41,7 @@ class SceneView(bpy.types.Operator):
         enc  = bpy.context.scene.encoder_path
         gdir = bpy.context.scene.game_path
         try:
-            if not SceneView.isMacApp(svp):
-                with open(svp): pass
+            with open(svp): pass
         except IOError:
             return False
         try:
@@ -57,6 +56,7 @@ class SceneView(bpy.types.Operator):
     def execute(self, context):
         sve = bpy.context.scene.viewer_path
         svp = bpy.context.scene.game_path
+        resdir = ''
 
         macApp = SceneView.isMacApp(sve)
         if macApp and sve.endswith('.app/'):
@@ -65,16 +65,16 @@ class SceneView(bpy.types.Operator):
         if svp=='':
             if macApp:
                 svp = os.path.normpath(os.path.join(sve, os.pardir))
+                resdir = os.path.join(sve, 'Contents', 'Resources', 'res')
             else:
                 svp = os.path.dirname(sve)
 
-        if macApp:
-            resdir = os.path.join(sve, 'Contents', 'Resources', 'res')
-        else:
+        if resdir=='':
             resdir = os.path.join(svp, 'res')
 
         enc = bpy.context.scene.encoder_path
-        sfp = os.path.join(resdir,"scene")
+        barename = os.path.splitext(bpy.path.basename(bpy.context.blend_data.filepath))[0]
+        sfp = os.path.join(resdir,barename)
         bpy.ops.export_scene.fbx(filepath=sfp+".fbx", 
                                  check_existing=True, 
                                  filter_glob="*.fbx", 
@@ -111,9 +111,9 @@ class SceneView(bpy.types.Operator):
                 shutil.copy(bpy.data.images[img].filepath,resdir)
 
         if macApp:
-            subprocess.call([ '/usr/bin/open', sve ], cwd=svp)
+            subprocess.Popen(['/usr/bin/open',sve,'--args',barename],cwd=svp)
         else:
-            subprocess.call([ sve ], cwd=svp)
+            subprocess.Popen([sve,barename],cwd=svp)
 
         return {"FINISHED"}
 
