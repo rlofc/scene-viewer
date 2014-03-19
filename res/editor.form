@@ -118,13 +118,5 @@ form sceneSettings
               text = Play selected
            }
         }
-
-        image signature
-        {
-           alignment = ALIGN_BOTTOM_HCENTER
-           width = 73
-           height = 25 
-           path = res/rlofc.png
-        }
 	 }
 }
