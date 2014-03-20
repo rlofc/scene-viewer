@@ -31,11 +31,22 @@ void SceneViewer::initialize()
     this->getArguments(&argc, &argv);
     if (argc<2) {
        _scene = Scene::load("res/scene.gpb");
-    } else {
+	   if (!_scene)
+	   {
+		   LOG("Could not load res/scene.gpb");
+		   exit();
+	   }
+	}
+	else {
         std::string path = std::string("res/")+std::string(argv[1])+std::string(".gpb");
         puts(path.c_str());
         _scene = Scene::load(path.c_str());
-    }
+		if (!_scene)
+		{
+			LOG("Could not load %s", path.c_str());
+			exit();
+		}
+	}
 
    _shift_key = false;
    _control_key = false;
@@ -117,8 +128,11 @@ bool SceneViewer::setLights(Node* node)
 {
    if (node->getModel()) {
       Material * m = node->getModel()->getMaterial(0);
-      m->getTechnique()->getParameter("u_directionalLightColor[0]")->setValue(Vector3(1,1,1));
-      m->getTechnique()->getParameter("u_directionalLightDirection[0]")->setValue(_directionalLightVector);
+	  if (m != NULL)
+	  {
+		  m->getTechnique()->getParameter("u_directionalLightColor[0]")->setValue(Vector3(1, 1, 1));
+		  m->getTechnique()->getParameter("u_directionalLightDirection[0]")->setValue(_directionalLightVector);
+	  }
    }
    return true;
 }
@@ -142,7 +156,6 @@ void SceneViewer::playNodeAmination(Node * node)
 {
    Animation * anim = node->getAnimation("animations");
    if (anim==NULL) anim = node->getAnimation();
-   anim->getDuration();
    if (anim) {
       if (anim->getDuration()>1)
          anim->play();
