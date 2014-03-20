@@ -26,7 +26,7 @@ public:
 
     void controlEvent( Delegate* delegate, Control* control, Control::Listener::EventType evt );
 
-    void setSelectedNode ( Node* node );
+    void setSelectedNode ( Node* node, bool enable=true );
 
 private:
     // form related members

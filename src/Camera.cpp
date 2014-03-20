@@ -9,23 +9,44 @@ void CameraController::initialize( Game* game, Scene* scene ) {
     _touch_x = 0;
     _touch_y = 0;
 
-    Camera* cam = scene->getActiveCamera();
-
-    _gimbelZ = scene->addNode( "gz" );
-    _gimbelX = scene->addNode( "gx" );
-
-    if ( cam ) {
-        // Set the aspect ratio for the scene's camera to match the current
-        // resolution
-        cam->setAspectRatio( game->getAspectRatio() );
-        cam->getNode()->rotateY( MATH_DEG_TO_RAD( -90 ) );
-    }
-
     // let add a node to have the Camera looking at
     Node* rootNode = scene->addNode( "root" );
     rootNode->setTranslation( 0, 0, 0 );
-    Node* cameraNode = scene->getActiveCamera()->getNode();
+    Node* cameraNode = NULL;
+    if ( scene->getActiveCamera() == NULL ) // create camera if it doesn't exist
+    {
+        // Set the aspect ratio for the scene's camera to match the current resolution
+        float w = (float)Game::getInstance()->getWidth();
+        float h = (float)Game::getInstance()->getWidth();
+        Camera* camera = Camera::createPerspective( 45, w / h, 1.0f, 10000.0f );
+        cameraNode = scene->addNode( "camera" );
+        cameraNode->setCamera( camera );
+
+        cameraNode->setRotation( 0, 0, 0, 0 );
+        cameraNode->setTranslation( Vector3::zero() );
+        cameraNode->translateForward( -30 );
+
+        // Make this the active camera of the scene.
+        scene->setActiveCamera(camera);
+        SAFE_RELEASE(camera);
+    }
+    else
+        cameraNode = scene->getActiveCamera()->getNode();
+
     rootNode->addChild( cameraNode );
+
+    Camera* cam = scene->getActiveCamera();
+
+    _gimbelZ = scene->addNode("gz");
+    _gimbelX = scene->addNode("gx");
+
+    if (cam) {
+        // Set the aspect ratio for the scene's camera to match the current
+        // resolution
+        cam->setAspectRatio(game->getAspectRatio());
+        cam->getNode()->rotateY(MATH_DEG_TO_RAD(-90));
+    }
+
 
     // Setup the camera control gimbels
     _freeCam = Camera::createPerspective( cam->getFieldOfView(), cam->getAspectRatio(), cam->getNearPlane(),

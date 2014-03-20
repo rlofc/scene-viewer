@@ -13,14 +13,24 @@ void SceneViewer::initialize() {
     char **argv;
     this->getArguments( &argc, &argv );
     if ( argc < 2 ) {
+        LOG( "Loading %s\n", "res/scene.gpb" );
         _scene = Scene::load( "res/scene.gpb" );
         if ( !_scene ) {
             LOG( "Could not load %s", "res/scene.gpb" );
             exit();
         }
     } else {
-        std::string path = std::string( "res/" ) + std::string( argv[1] ) + std::string( ".gpb" );
-        puts( path.c_str() );
+        std::string fn = std::string( argv[1] );
+        if ( fn.find( ".gpb" ) == std::string::npos && fn.find( ".scene" ) == std::string::npos )
+            fn += std::string( ".gpb" ); // add .gpb to filename if it doesn't contain .gpb/.scene
+        
+        std::string path;
+        if ( fn.find( "/" ) == std::string::npos && fn.find( "\\" ) == std::string::npos )
+            path = std::string( "res/" ) + fn; // if filename doesn't contain path, use  res/  path
+        else
+            path = fn; // use filename's path
+
+        LOG( "Loading %s\n", path.c_str() );
         _scene = Scene::load( path.c_str() );
         if ( !_scene ) {
             LOG( "Could not load %s", path.c_str() );
@@ -132,9 +142,13 @@ bool SceneViewer::checkScene( Node *node, Ray *ray ) {
 
         float distance = FLT_MAX;
         if ( ( distance = ray->intersects( worldSpaceBoundingBox ) ) != Ray::INTERSECTS_NONE ) {
-            _selected = node;
-            _sidePanel.setSelectedNode( node );
-            return true;
+            if (distance < _lastDistance)
+            {
+                _lastDistance = distance;
+                _selected = node;
+                _sidePanel.setSelectedNode(node);
+                return true;
+            }
         }
     }
     return false;
@@ -146,6 +160,10 @@ void SceneViewer::touchEvent( Touch::TouchEvent evt, int x, int y, unsigned int 
             Ray ray;
             Camera *camera = _scene->getActiveCamera();
             if ( camera ) {
+                _lastDistance = FLT_MAX;
+                _selected = NULL;
+                _sidePanel.setSelectedNode(NULL, false); // at start no selection
+
                 camera->pickRay( getViewport(), x, y, &ray );
                 _scene->visit( this, &SceneViewer::checkScene, &ray );
             }
