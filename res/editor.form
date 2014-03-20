@@ -49,7 +49,6 @@ form sceneSettings
            {
            }
 
-
            label titleClearColor : titleLight
            {
                text = Clear Color
@@ -80,19 +79,47 @@ form sceneSettings
                text = Blue
            }
 
+           label titleGrid : titleLight
+           {
+               text = Grid Settings
+           }
+
            checkbox gridCheckBox
-		     {
-               alignment = ALIGN_BOTTOM_HCENTER
+           {
                textAlignment = ALIGN_HCENTER 
                style = noBorder
                size = 150, 10
                height = 30
                orientation = HORIZONTAL
-			      text = Grid
-			      value = true
-		     }
+               text = Draw Grid
+               value = true
+           }
 
+           container sep
+           {
+               size = 150,20
+           }
 
+           label titleCamera : titleLight
+           {
+               text = Camera Gimbel
+           }
+
+           checkbox cameraGimbelCheckBox
+           {
+               textAlignment = ALIGN_HCENTER 
+               style = noBorder
+               size = 150, 10
+               height = 30
+               orientation = HORIZONTAL
+               text = Locked 
+               value = true
+           }
+
+           container sep
+           {
+               size = 150,20
+           }
 
            label titleAnimations : titleLight
            {

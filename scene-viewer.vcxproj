@@ -333,9 +333,15 @@ xcopy ..\GamePlay\gameplay\res\ui res\ui\* /s /y /d</Command>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SceneViewer.cpp" />
+    <ClCompile Include="src\Camera.cpp" />
+    <ClCompile Include="src\Grid.cpp" />
+    <ClCompile Include="src\Forms.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\SceneViewer.h" />
+    <ClInclude Include="src\Camera.h" />
+    <ClInclude Include="src\Grid.h" />
+    <ClInclude Include="src\Forms.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
