@@ -78,9 +78,27 @@
     <ClInclude Include="src\SceneViewer.h">
       <Filter>src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Camera.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Grid.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Forms.h">
+      <Filter>src</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\SceneViewer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Camera.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Grid.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Forms.cpp">
       <Filter>src</Filter>
     </ClCompile>
   </ItemGroup>
