@@ -13,6 +13,7 @@ public:
         virtual void playSelectedNode() = 0;
         virtual void playAllNodes() = 0 ;
         virtual void setGrid( bool draw ) = 0;
+        virtual void setGimbel( bool locked ) = 0;
         virtual void setLightVector( const Vector3 & lightVector ) = 0;
         virtual void setClearColor( const Vector4 & clearColor ) = 0;
     };
@@ -42,6 +43,7 @@ private:
     Button*   _bPlayAll;
     Button*   _bPlaySelected;
     CheckBox* _gridCheckBox;
+    CheckBox* _cameraGimbelCheckBox;
 };
 
 #endif /* end of include guard: FORMS_H_Y3DLK1ER */

@@ -6,10 +6,7 @@
 // Declare our game instance
 SceneViewer game;
 
-SceneViewer::SceneViewer()
-    : _scene( NULL ),
-      _selected( NULL ),
-      _isGridOn( false ) {}
+SceneViewer::SceneViewer() : _scene( NULL ), _selected( NULL ), _isGridOn( false ) {}
 
 void SceneViewer::initialize() {
     int argc;
@@ -31,8 +28,8 @@ void SceneViewer::initialize() {
         }
     }
 
-    _camera.initialize(this, _scene);
-    _sidePanel.initialize(this, _scene);
+    _camera.initialize( this, _scene );
+    _sidePanel.initialize( this, _scene );
 
     // Try to use any significant light source for the scene light vector.
     // This is just a temporary hack until I manage to tap into the
@@ -42,7 +39,6 @@ void SceneViewer::initialize() {
                       : _scene->findNode( "Area" ) ? _scene->findNode( "Area" )
                                                    : _scene->findNode( "Sun" ) ? _scene->findNode( "Sun" ) : 0;
     if ( light ) _directionalLightVector = light->getForwardVector();
-
 
     // Set the metarial lighting
     _scene->visit( this, &SceneViewer::setLights );
@@ -138,7 +134,7 @@ bool SceneViewer::checkScene( Node *node, Ray *ray ) {
         if ( ( distance = ray->intersects( worldSpaceBoundingBox ) ) != Ray::INTERSECTS_NONE ) {
             _selected = node;
             _sidePanel.setSelectedNode( node );
-           return true;
+            return true;
         }
     }
     return false;
@@ -172,23 +168,17 @@ void SceneViewer::lookAt( Node *node, const Vector3 &eye, const Vector3 &target,
     node->setRotation( rotation );
 }
 
-void SceneViewer::playSelectedNode() {
-    this->playNodeAmination( _selected );
-}
+void SceneViewer::playSelectedNode() { this->playNodeAmination( _selected ); }
 
-void SceneViewer::playAllNodes() {
-    _scene->visit( this, &SceneViewer::startAnims );
-}
+void SceneViewer::playAllNodes() { _scene->visit( this, &SceneViewer::startAnims ); }
 
-void SceneViewer::setGrid( bool draw ) {
-    _isGridOn = draw;
-}
+void SceneViewer::setGrid( bool draw ) { _isGridOn = draw; }
 
-void SceneViewer::setLightVector( const Vector3 & lightVector ) {
+void SceneViewer::setGimbel( bool locked ) { _camera.setGimbel( _scene, locked ); }
+
+void SceneViewer::setLightVector( const Vector3 &lightVector ) {
     _directionalLightVector = lightVector;
     _scene->visit( this, &SceneViewer::setLights );
 }
 
-void SceneViewer::setClearColor( const Vector4 & clearColor ) {
-    _clearColor = clearColor;
-}
+void SceneViewer::setClearColor( const Vector4 &clearColor ) { _clearColor = clearColor; }

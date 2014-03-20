@@ -21,6 +21,7 @@ public: // SidePanel::Delegate
     virtual void playSelectedNode();
     virtual void playAllNodes();
     virtual void setGrid( bool draw );
+    virtual void setGimbel( bool locked );
     virtual void setLightVector( const Vector3 & lightVector );
     virtual void setClearColor( const Vector4 & clearColor );
 

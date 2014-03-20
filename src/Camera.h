@@ -6,7 +6,7 @@ using namespace gameplay;
 
 class CameraController {
 public:
-    virtual void initialize( Game* game, Scene* scene);
+    virtual void initialize( Game* game, Scene* scene );
     virtual void finalize( Game* game );
 
     void keyEvent( Game* game, Scene* scene, Keyboard::KeyEvent evt, int key );
@@ -16,7 +16,12 @@ public:
     void update( float elapsedTime );
     void render( float elapsedTime );
 
+    void setGimbel( Scene* scene, bool locked );
+
 private:
+    Camera* _sceneCam;
+    Camera* _freeCam;
+
     // camera gimbels
     Node* _gimbelX;
     Node* _gimbelZ;
@@ -32,8 +37,8 @@ private:
     bool _rotate_active;
     bool _pan_active;
     bool _zoom_active;
-    int  _touch_x;
-    int  _touch_y;
+    int _touch_x;
+    int _touch_y;
 };
 
 #endif /* end of include guard: CAMERA_H_M8TIKJNN */

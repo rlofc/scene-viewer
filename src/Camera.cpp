@@ -1,18 +1,18 @@
 #include "Camera.h"
 
-void CameraController::initialize( Game* game, Scene* scene) {
-    _shift_key     = false;
-    _control_key   = false;
+void CameraController::initialize( Game* game, Scene* scene ) {
+    _shift_key = false;
+    _control_key = false;
     _rotate_active = true;
-    _pan_active    = false;
-    _zoom_active   = false;
-    _touch_x       = 0;
-    _touch_y       = 0;
+    _pan_active = false;
+    _zoom_active = false;
+    _touch_x = 0;
+    _touch_y = 0;
 
-    Camera *cam = scene->getActiveCamera();
-    cam->getNode()->setRotation( 0, 0, 0, 0 );
-    cam->getNode()->setTranslation( Vector3::zero() );
-    cam->getNode()->translateForward( -30 );
+    Camera* cam = scene->getActiveCamera();
+
+    _gimbelZ = scene->addNode( "gz" );
+    _gimbelX = scene->addNode( "gx" );
 
     if ( cam ) {
         // Set the aspect ratio for the scene's camera to match the current
@@ -20,18 +20,25 @@ void CameraController::initialize( Game* game, Scene* scene) {
         cam->setAspectRatio( game->getAspectRatio() );
         cam->getNode()->rotateY( MATH_DEG_TO_RAD( -90 ) );
     }
-    
+
     // let add a node to have the Camera looking at
-    Node *rootNode = scene->addNode( "root" );
+    Node* rootNode = scene->addNode( "root" );
     rootNode->setTranslation( 0, 0, 0 );
-    Node *cameraNode = scene->getActiveCamera()->getNode();
+    Node* cameraNode = scene->getActiveCamera()->getNode();
     rootNode->addChild( cameraNode );
-    
+
     // Setup the camera control gimbels
-    _gimbelZ = scene->addNode( "gz" );
-    _gimbelX = scene->addNode( "gz" );
-    _gimbelX->addChild( cam->getNode() );
+    _freeCam = Camera::createPerspective( cam->getFieldOfView(), cam->getAspectRatio(), cam->getNearPlane(),
+                                          cam->getFarPlane() );
+    scene->addNode( "freeCam" )->setCamera( _freeCam );
+
+    _freeCam->getNode()->setRotation( 0, 0, 0, 0 );
+    _freeCam->getNode()->setTranslation( Vector3::zero() );
+    _freeCam->getNode()->translateForward( -30 );
+
     _gimbelZ->addChild( _gimbelX );
+    _gimbelX->addChild( _freeCam->getNode() );
+    _sceneCam = cam;
 }
 
 void CameraController::finalize( Game* game ) {
@@ -40,24 +47,24 @@ void CameraController::finalize( Game* game ) {
 }
 
 void CameraController::rotateCameraLocal( Scene* scene, float pitch, float yaw ) {
-    Node *cameraNode = scene->getActiveCamera()->getNode();
+    Node* cameraNode = scene->getActiveCamera()->getNode();
     cameraNode->setRotation( Quaternion::identity() );
     cameraNode->rotateY( yaw );
     cameraNode->rotateX( pitch );
 }
 
 void CameraController::rotateCameraView( Scene* scene, float x, float y ) {
-    _gimbelZ->rotateZ( x );
+    _gimbelZ->rotateY( x );
     _gimbelX->rotateX( y );
 }
 
 void CameraController::zoomCameraView( Scene* scene, float x, float y ) {
-    Node *cameraNode = scene->getActiveCamera()->getNode();
+    Node* cameraNode = scene->getActiveCamera()->getNode();
     cameraNode->translateForward( -y * cameraNode->getTranslation().distance( Vector3::zero() ) );
 }
 
 void CameraController::panCameraView( Scene* scene, float x, float y ) {
-    Node *rootNode = scene->findNode( "root" );
+    Node* rootNode = scene->findNode( "root" );
     float location_x = rootNode->getTranslationX();
     float location_y = rootNode->getTranslationY();
     float inv_x = location_x - x;
@@ -109,23 +116,24 @@ void CameraController::keyEvent( Game* game, Scene* scene, Keyboard::KeyEvent ev
       _zoom_active = true;
       _pan_active = false;
    }
-   else */ 
+   else */
     if ( _control_key ) {
         _rotate_active = false;
-        _zoom_active   = true;
-        _pan_active    = false;
+        _zoom_active = true;
+        _pan_active = false;
     } else if ( _shift_key ) {
         _rotate_active = false;
-        _zoom_active   = false;
-        _pan_active    = true;
+        _zoom_active = false;
+        _pan_active = true;
     } else {
         _rotate_active = true;
-        _zoom_active   = false;
-        _pan_active    = false;
+        _zoom_active = false;
+        _pan_active = false;
     }
 }
 
-void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent evt, int x, int y, unsigned int contactIndex ) {
+void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent evt, int x, int y,
+                                   unsigned int contactIndex ) {
     switch ( evt ) {
         case Touch::TOUCH_PRESS:
             if ( contactIndex == 0 ) {
@@ -139,7 +147,7 @@ void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent e
                 int sx = 1;
                 int sy = 1;
                 int delta_x, delta_y;
-                Node *cameraNode = scene->getActiveCamera()->getNode();
+                Node* cameraNode = scene->getActiveCamera()->getNode();
 
                 delta_x = x - _touch_x;
                 delta_y = y - _touch_y;
@@ -159,5 +167,8 @@ void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent e
     }
 }
 
-void CameraController::controlEvent( Game* game, Scene* scene, Control* control, Control::Listener::EventType evt ) {
+void CameraController::controlEvent( Game* game, Scene* scene, Control* control, Control::Listener::EventType evt ) {}
+
+void CameraController::setGimbel( Scene* scene, bool locked ) {
+    scene->setActiveCamera( locked ? _sceneCam : _freeCam );
 }

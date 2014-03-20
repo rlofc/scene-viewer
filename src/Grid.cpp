@@ -27,15 +27,15 @@ Grid::Grid( unsigned int lineCount ) {
 
         // Build the lines
         vertices[i] = value;
-        vertices[++i] = -gridLength;
         vertices[++i] = 0.0f;
+        vertices[++i] = -gridLength;
         vertices[++i] = color.x;
         vertices[++i] = color.y;
         vertices[++i] = color.z;
 
         vertices[++i] = value;
-        vertices[++i] = gridLength;
         vertices[++i] = 0.0f;
+        vertices[++i] = gridLength;
         vertices[++i] = color.x;
         vertices[++i] = color.y;
         vertices[++i] = color.z;
@@ -45,15 +45,15 @@ Grid::Grid( unsigned int lineCount ) {
             color.set( 0.7f, 0.15f, 0.15f, 1.0f );
         }
         vertices[++i] = -gridLength;
-        vertices[++i] = value;
         vertices[++i] = 0.0f;
+        vertices[++i] = value;
         vertices[++i] = color.x;
         vertices[++i] = color.y;
         vertices[++i] = color.z;
 
         vertices[++i] = gridLength;
-        vertices[++i] = value;
         vertices[++i] = 0.0f;
+        vertices[++i] = value;
         vertices[++i] = color.x;
         vertices[++i] = color.y;
         vertices[++i] = color.z;

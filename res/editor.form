@@ -100,6 +100,27 @@ form sceneSettings
                size = 150,20
            }
 
+           label titleCamera : titleLight
+           {
+               text = Camera Gimbel
+           }
+
+           checkbox cameraGimbelCheckBox
+           {
+               textAlignment = ALIGN_HCENTER 
+               style = noBorder
+               size = 150, 10
+               height = 30
+               orientation = HORIZONTAL
+               text = Locked 
+               value = true
+           }
+
+           container sep
+           {
+               size = 150,20
+           }
+
            label titleAnimations : titleLight
            {
                text = Animations
