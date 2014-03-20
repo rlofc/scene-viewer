@@ -14,15 +14,106 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+# parts of the script is copied from http://blenderartists.org/forum/showthread.php?255246-Rotate-whole-scene-around-x-90-and-apply-rotation
+
 import bpy,subprocess,shutil,os,sys
+try: import io_scene_fbx.export_fbx
+except:
+    print('error: io_scene_fbx.export_fbx not found.')
+    # This might need to be bpy.Quit()
+    raise
+
+import math
+from mathutils import Matrix
+from functools import cmp_to_key
     
 bl_info = {"name": "GamePlay 3D Scene Viewer", "category": "User"}
 
+bpy.types.Scene.rotatex = bpy.props.BoolProperty(name="Rotate X-90",default=False)
 bpy.types.Scene.encoder_group = bpy.props.BoolProperty(name="Group Animations",default=False)
 bpy.types.Scene.encoder_genmat = bpy.props.BoolProperty(name="Generate Materials",default=True)
 bpy.types.Scene.encoder_path = bpy.props.StringProperty(name="Encoder Path",subtype="FILE_PATH",default="")
 bpy.types.Scene.viewer_path = bpy.props.StringProperty(name="Viewer Path",subtype="FILE_PATH",default="")
 bpy.types.Scene.game_path = bpy.props.StringProperty(name="Workspace",subtype="FILE_PATH",default="")
+
+# SORTING HELPERS (sort list of objects, parents prior to children)
+# root object -> 0, first child -> 1, ...
+def myDepth(o): 
+    if o == None:
+        return 0
+    if o.parent == None:
+        return 0
+    else:
+        return 1 + myDepth(o.parent)
+
+# compare: parent prior child
+def myDepthCompare(a,b):
+    da = myDepth(a)
+    db = myDepth(b)
+    if da < db:
+        return -1
+    elif da > db:
+        return 1
+    else:
+        return 0
+
+def rotateScene(ang):
+    matPatch = Matrix.Rotation(ang, 4, 'X')
+
+    # deselect everything to close edit / pose mode etc.
+    bpy.context.scene.objects.active = None
+
+    # activate all 20 layers
+    for i in range(0, 20):
+        bpy.data.scenes[0].layers[i] = True;
+
+        # show all root objects
+    for obj in bpy.data.objects:
+        obj.hide = False;
+
+    # make single user (otherwise import fails on instances!) --> no instance anymore
+    bpy.ops.object.make_single_user(type='ALL', object=True, obdata=True)
+
+    # prepare rotation-sensitive data
+    # a) deactivate animation constraints
+    # b) apply mirror modifiers
+    for obj in bpy.data.objects:
+        # only posed objects
+        if obj.pose is not None:
+            # check constraints for all bones
+            for pBone in obj.pose.bones:
+                for constraint in pBone.constraints:
+                    # for now only deactivate limit_location
+                    if constraint.type == 'LIMIT_LOCATION':
+                        constraint.mute = True
+        # need to activate current object to apply modifiers
+        bpy.context.scene.objects.active = obj
+        for modifier in obj.modifiers:
+            # if you want to delete only UV_project modifiers
+            if modifier.type == 'MIRROR':
+                bpy.ops.object.modifier_apply(apply_as='DATA', modifier=modifier.name)
+
+    # deselect again, deterministic behaviour!
+    bpy.context.scene.objects.active = None
+
+    # Iterate the objects in the file, only root level and rotate them
+    for obj in bpy.data.objects:        
+        if obj.parent != None:
+            continue
+        obj.matrix_world = matPatch * obj.matrix_world
+
+    # deselect everything
+    for obj in bpy.data.objects:
+        obj.select = False;
+
+    # apply all(!) transforms 
+    # parent prior child
+    for obj in sorted(bpy.data.objects, key=cmp_to_key(myDepthCompare)):
+        obj.select = True;
+        bpy.ops.object.transform_apply(rotation=True)
+        # deselect again
+        obj.select = False;
+    #------------------------------------------------------------
 
 class SceneView(bpy.types.Operator):
     """the GamePlay 3D scene viewer"""
@@ -54,6 +145,15 @@ class SceneView(bpy.types.Operator):
             return True
     
     def execute(self, context):
+        if bpy.context.scene.rotatex:
+           # Rotate -90 around the X-axis
+           rotateScene(-math.pi / 2.0)
+           axisForward='Y'
+           axisUp='Z'
+        else:
+           axisForward='Z'
+           axisUp='Y'
+	
         sve = bpy.context.scene.viewer_path
         svp = bpy.context.scene.game_path
         resdir = ''
@@ -80,8 +180,8 @@ class SceneView(bpy.types.Operator):
                                  filter_glob="*.fbx", 
                                  use_selection=False, 
                                  global_scale=1.0, 
-                                 axis_forward='Y',
-                                 axis_up='Z',
+                                 axis_forward=axisForward,
+                                 axis_up=axisUp,
                                  object_types={'EMPTY', 'MESH','LAMP', 'CAMERA', 'ARMATURE'}, 
                                  use_mesh_modifiers=True, 
                                  mesh_smooth_type='FACE', 
@@ -115,6 +215,10 @@ class SceneView(bpy.types.Operator):
         else:
             subprocess.Popen([sve,barename],cwd=svp)
 
+        if bpy.context.scene.rotatex:
+           # Rotate 90 around the X-axis
+           rotateScene(math.pi / 2.0)
+			
         return {"FINISHED"}
 
 class GameplayPanel(bpy.types.Panel):
@@ -130,6 +234,7 @@ class GameplayPanel(bpy.types.Panel):
         layout.prop(context.scene, "game_path")
         layout.prop(context.scene, "encoder_genmat")
         layout.prop(context.scene, "encoder_group")
+        layout.prop(context.scene, "rotatex")
         layout.operator("scene.gameplayview")
 
 def register():
