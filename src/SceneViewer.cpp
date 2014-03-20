@@ -25,7 +25,7 @@ void SceneViewer::initialize()
        _scene = Scene::load("res/scene.gpb");
 	   if (!_scene)
 	   {
-		   LOG("Could not load res/scene.gpb");
+		   LOG("Could not load %s","res/scene.gpb");
 		   exit();
 	   }
 	}
