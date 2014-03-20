@@ -83,10 +83,10 @@ void SidePanel::controlEvent( SidePanel::Delegate *delegate, Control *control, C
 }
 
 void SidePanel::setSelectedNode( gameplay::Node *node, bool enable ) {
-	if (enable)
-		_bPlaySelected->setText(node->getId());
-	else
-		_bPlaySelected->setText("Play selected");
+    if (enable)
+        _bPlaySelected->setText(node->getId());
+    else
+        _bPlaySelected->setText("Play selected");
 
-	_bPlaySelected->setEnabled(enable);
+    _bPlaySelected->setEnabled(enable);
 }
