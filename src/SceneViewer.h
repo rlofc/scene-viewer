@@ -45,6 +45,7 @@ private:
     SidePanel        _sidePanel;
 
     bool _isGridOn;
+	float _lastDistance;
 
     void lookAt( Node* node, const Vector3& eye, const Vector3& target, const Vector3& up );
     void playNodeAmination( Node* node );
