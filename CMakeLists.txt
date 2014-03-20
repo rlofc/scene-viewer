@@ -135,6 +135,12 @@ source_group(src FILES ${GAME_SRC})
 set(GAME_SRC
 	src/SceneViewer.cpp
 	src/SceneViewer.h
+    src/Camera.cpp
+    src/Camera.h
+    src/Grid.cpp
+    src/Grid.h
+    src/Forms.cpp
+    src/Forms.h
 )
 
 add_executable(${GAME_NAME}
