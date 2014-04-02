@@ -14,8 +14,8 @@ public:
         virtual void playAllNodes() = 0 ;
         virtual void setGrid( bool draw ) = 0;
         virtual void setGimbel( bool locked ) = 0;
-		virtual void setInvertY(bool inv) = 0;
-		virtual void setFpsCam(bool fps) = 0;
+        virtual void setInvertY(bool inv) = 0;
+        virtual void setFpsCam(bool fps) = 0;
         virtual void setLightVector( const Vector3 & lightVector ) = 0;
         virtual void setClearColor( const Vector4 & clearColor ) = 0;
     };
@@ -46,8 +46,8 @@ private:
     Button*   _bPlaySelected;
     CheckBox* _gridCheckBox;
     CheckBox* _cameraGimbelCheckBox;
-	CheckBox* _cameraInvertY;
-	CheckBox* _cameraFPS;
+    CheckBox* _cameraInvertY;
+    CheckBox* _cameraFPS;
 };
 
 #endif /* end of include guard: FORMS_H_Y3DLK1ER */

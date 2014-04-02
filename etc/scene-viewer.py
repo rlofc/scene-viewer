@@ -151,7 +151,7 @@ class SceneView(bpy.types.Operator):
           if obj.type == 'MESH':
             bpy.context.scene.objects.active = obj
             bpy.ops.object.mode_set(mode='OBJECT')
-		
+        
         if bpy.context.scene.rotatex:
            # Rotate -90 around the X-axis
            rotateScene(-math.pi / 2.0)
@@ -160,7 +160,7 @@ class SceneView(bpy.types.Operator):
         else:
            axisForward='Z'
            axisUp='Y'
-	
+    
         sve = bpy.context.scene.viewer_path
         svp = bpy.context.scene.game_path
         resdir = ''
@@ -225,10 +225,10 @@ class SceneView(bpy.types.Operator):
         if bpy.context.scene.rotatex:
            # Rotate 90 around the X-axis 
            rotateScene(math.pi / 2.0)
-	   
-		   # or use undo, so it rotates scene back (and get instances back)
+       
+           # or use undo, so it rotates scene back (and get instances back)
            #bpy.ops.ed.undo()
-			
+            
         return {"FINISHED"}
 
 class GameplayPanel(bpy.types.Panel):

@@ -22,9 +22,9 @@ public: // SidePanel::Delegate
     virtual void playAllNodes();
     virtual void setGrid( bool draw );
     virtual void setGimbel( bool locked );
-	virtual void setInvertY(bool inv) { _camera.setInvertY(inv); }
-	virtual void setFpsCam(bool fps) { _camera.setFpsCam(fps); }
-	virtual void setLightVector(const Vector3 & lightVector);
+    virtual void setInvertY(bool inv) { _camera.setInvertY(inv); }
+    virtual void setFpsCam(bool fps) { _camera.setFpsCam(fps); }
+    virtual void setLightVector(const Vector3 & lightVector);
     virtual void setClearColor( const Vector4 & clearColor );
 
 protected:
