@@ -19,7 +19,7 @@ form sceneSettings
         {
            alignment = ALIGN_TOP_LEFT
            autoWidth = true
-           height = 600
+           height = 700
            layout = LAYOUT_VERTICAL
            label titleLight
            {
@@ -107,13 +107,39 @@ form sceneSettings
 
            checkbox cameraGimbelCheckBox
            {
-               textAlignment = ALIGN_HCENTER 
                style = noBorder
                size = 150, 10
-               height = 30
                orientation = HORIZONTAL
                text = Locked 
                value = true
+           }
+
+           container sep
+           {
+               size = 150,15
+           }
+
+           checkbox cameraInvertY
+           {
+               style = noBorder
+               size = 150, 10
+               orientation = HORIZONTAL
+               text = Invert Y 
+               value = false
+           }
+
+           container sep
+           {
+               size = 150,15
+           }
+
+           checkbox cameraFPS
+           {
+               style = noBorder
+               size = 150, 10
+               orientation = HORIZONTAL
+               text = FPS Camera
+               value = false
            }
 
            container sep
