@@ -17,6 +17,8 @@ public:
     void render( float elapsedTime );
 
     void setGimbel( Scene* scene, bool locked );
+    void setInvertY(bool inv) { _invertY = inv; }
+    void setFpsCam(bool fps) { _fpsCam = fps; }
 
 private:
     Camera* _sceneCam;
@@ -25,6 +27,8 @@ private:
     // camera gimbels
     Node* _gimbelX;
     Node* _gimbelZ;
+
+    bool _invertY, _fpsCam;
 
     // View control
     void rotateCameraLocal( Scene* scene, float x, float y );

@@ -9,6 +9,9 @@ void CameraController::initialize( Game* game, Scene* scene ) {
     _touch_x = 0;
     _touch_y = 0;
 
+    _invertY = false;
+    _fpsCam = false;
+
     // let add a node to have the Camera looking at
     Node* rootNode = scene->addNode( "root" );
     rootNode->setTranslation( 0, 0, 0 );
@@ -164,7 +167,7 @@ void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent e
             break;
 
         case Touch::TOUCH_MOVE:
-            if ( contactIndex == 0 ) {
+            if ( contactIndex == 0 && scene->getActiveCamera() == _freeCam ) {
                 int sx = 1;
                 int sy = 1;
                 int delta_x, delta_y;
@@ -178,7 +181,10 @@ void CameraController::touchEvent( Game* game, Scene* scene, Touch::TouchEvent e
                     zoomCameraView( scene, -delta_x / 200.f, -delta_y / 200.f );
                 }
                 if ( _rotate_active ) {
-                    rotateCameraView( scene, -delta_x / 500.f, delta_y / 500.f );
+                    if (_invertY)
+                        rotateCameraView(scene, -delta_x / 500.f, -delta_y / 500.f);
+                    else
+                        rotateCameraView( scene, -delta_x / 500.f, delta_y / 500.f );
                 }
                 if ( _pan_active ) {
                     panCameraView( scene, -delta_x / 500.f, delta_y / 500.f );

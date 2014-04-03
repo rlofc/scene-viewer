@@ -27,6 +27,8 @@ void SidePanel::initialize( Control::Listener *game, Scene *scene ) {
 
     _gridCheckBox = static_cast<CheckBox *>( _form->getControl( "gridCheckBox" ) );
     _cameraGimbelCheckBox = static_cast<CheckBox *>( _form->getControl( "cameraGimbelCheckBox" ) );
+    _cameraInvertY = static_cast<CheckBox *>(_form->getControl("cameraInvertY"));
+    _cameraFPS = static_cast<CheckBox *>(_form->getControl("cameraFPS"));
 
     Slider *sliders[] = {_sliderLightVectorX,  _sliderLightVectorY,    _sliderLightVectorZ,
                          _sliderClearColorRed, _sliderClearColorGreen, _sliderClearColorBlue},
@@ -42,6 +44,17 @@ void SidePanel::initialize( Control::Listener *game, Scene *scene ) {
     _cameraGimbelCheckBox->addListener( game, Control::Listener::VALUE_CHANGED );
     _cameraGimbelCheckBox->setEnabled( true );
     _cameraGimbelCheckBox->setChecked( true );
+
+    _cameraInvertY->addListener(game, Control::Listener::VALUE_CHANGED);
+    _cameraInvertY->setEnabled(true);
+    _cameraInvertY->setChecked(false);
+
+    // TODO
+    _cameraFPS->addListener(game, Control::Listener::VALUE_CHANGED);
+    _cameraFPS->setEnabled(true);
+    _cameraFPS->setChecked(false);
+    _cameraFPS->setVisible(false); // hide it for now
+
 }
 
 void SidePanel::finalize( Game *game ) { SAFE_RELEASE( _form ); }
@@ -77,6 +90,12 @@ void SidePanel::controlEvent( SidePanel::Delegate *delegate, Control *control, C
             }
             if ( control == _cameraGimbelCheckBox ) {
                 delegate->setGimbel( _cameraGimbelCheckBox->isChecked() );
+            }
+            if (control == _cameraInvertY) {
+                delegate->setInvertY(_cameraInvertY->isChecked());
+            }
+            if (control == _cameraFPS) {
+                delegate->setFpsCam(_cameraFPS->isChecked());
             }
             break;
     }
