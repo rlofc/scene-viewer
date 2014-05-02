@@ -239,17 +239,17 @@ class SceneView(bpy.types.Operator):
                         runcmd = '/usr/bin/open -t "'+sfp+'.xml"'  # Use default text editor
                         os.system('echo scene-viewer - Executing: '+runcmd)
                 elif pltfm.startswith('linux'):
-                        # runcmd = '/usr/bin/gedit "'+sfp+'.xml"'  # Use a custom command
+                        # runcmd = '( /usr/bin/gedit "'+sfp+'.xml" ) &'  # Use a custom command
                         #
                         # You may substitute the MYPREFERRED string with your graphical text editor (for example: MYPREFERRED="chromium-browser").
-                        # Please don't specify a text editor with no X window interface (like Vim), or Blender will freeze.
-                        runcmd = '''MYPREFERRED=""; ALREADY=0 ; runcmd() { if [ $ALREADY = 0 -a ! -z "${2}" -a ! -z "`which ${1}`" ]; then
+                        # Please don't specify a text editor with no X window interface (like Vim), or a silent process will be open in background.
+                        runcmd = '''( MYPREFERRED=""; ALREADY=0 ; runcmd() { if [ $ALREADY = 0 -a ! -z "${2}" -a ! -z "`which ${1}`" ]; then
                         echo "scene-viewer - Executing:" ${1} ${2} ; "${1}" "${2}" ; ALREADY=1 ; fi } ; F="'''+sfp+'''.xml";
-                        runcmd "${MYPREFERRED}" "${F}" ; runcmd "gedit" "${F}" ; runcmd "kate" "${F}" ; runcmd "leafpad" "${F}" ; '''
+                        runcmd "${MYPREFERRED}" "${F}" ; runcmd "gedit" "${F}" ; runcmd "kate" "${F}" ; runcmd "leafpad" "${F}" ; ) &'''
                 os.system(runcmd)  # If you want to disable the text editor, please comment this line with a '#' character.
         
         if bpy.context.scene.rotatex:
-           # Rotate 90 around the X-axis 
+           # Rotate 90 around the X-axis
            rotateScene(math.pi / 2.0)
            
            # or use undo, so it rotates scene back (and get instances back)
