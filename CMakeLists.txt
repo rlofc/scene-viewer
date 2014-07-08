@@ -108,7 +108,7 @@ append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "BulletCollision" "bullet")
 append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "LinearMath" "bullet")
 append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "openal" "openal" "openal32")
 append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "vorbis" "oggvorbis" "libvorbis")
-append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "ogg" "oggvorbis" "libogg")
+append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "ogg" "vorbisfile" "libogg")
 append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "z" "zlib" "zlib")
 
 IF (TARGET_OS STREQUAL "LINUX")
