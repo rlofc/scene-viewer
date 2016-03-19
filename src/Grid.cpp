@@ -70,7 +70,7 @@ Grid::Grid( unsigned int lineCount ) {
     model->setMaterial( "res/scene_viewer.material#grid" );
     SAFE_RELEASE( mesh );
     _node = Node::create("grid");
-    _node->setModel( model );
+    _node->setDrawable( model );
     model->release();
 }
 
@@ -79,5 +79,5 @@ Grid* Grid::create( unsigned int lineCount ) {
 }
 
 void Grid::draw() { 
-    _node->getModel()->draw(); 
+    _node->getDrawable()->draw(); 
 }

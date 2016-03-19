@@ -68,8 +68,9 @@ void SceneViewer::finalize() {
 }
 
 bool SceneViewer::setLights( Node *node ) {
-    if ( node->getModel() ) {
-        Material *m = node->getModel()->getMaterial( 0 );
+    Model* model = dynamic_cast<Model*>(node->getDrawable());
+    if ( model ) {
+        Material *m = model->getMaterial( 0 );
         if ( m != NULL ) {
             m->getTechnique()->getParameter( "u_directionalLightColor[0]" )->setValue( Vector3( 1, 1, 1 ) );
             m->getTechnique()->getParameter( "u_directionalLightDirection[0]" )->setValue( _directionalLightVector );
@@ -98,7 +99,7 @@ void SceneViewer::playNodeAmination( Node *node ) {
 }
 
 bool SceneViewer::startAnims( Node *node ) {
-    if ( node->getModel() ) {
+    if ( node->getDrawable() ) {
         this->playNodeAmination( node );
     }
     return false;
@@ -106,7 +107,7 @@ bool SceneViewer::startAnims( Node *node ) {
 
 bool SceneViewer::drawScene( Node *node ) {
     // If the node visited contains a model, draw it
-    Model *model = node->getModel();
+    Model *model = dynamic_cast<Model*>(node->getDrawable());
     if ( model ) {
         if ( strcmp( node->getId(), "grid" ) == 0 ) {
             if ( _isGridOn ) model->draw();
@@ -135,7 +136,7 @@ void SceneViewer::controlEvent( Control *control, EventType evt ) {
 }
 
 bool SceneViewer::checkScene( Node *node, Ray *ray ) {
-    Model *model = node->getModel();
+    Model *model = dynamic_cast<Model*>(node->getDrawable());
     if ( model ) {
         BoundingBox worldSpaceBoundingBox( model->getMesh()->getBoundingBox() );
         worldSpaceBoundingBox.transform( node->getWorldMatrix() );
