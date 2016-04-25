@@ -11,7 +11,9 @@ else()
     set(ARCH_DEPS_DIR "x86" )
 endif()
 
-set(GAMEPLAY_SRC_PATH "../GamePlay") 
+if(NOT GAMEPLAY_SRC_PATH)
+    set(GAMEPLAY_SRC_PATH "../GamePlay")
+endif()
 set(GAMEPLAY_EXT_LIBS_PATH "${GAMEPLAY_SRC_PATH}/external-deps/lib")
 
 IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
@@ -19,6 +21,11 @@ IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
     ADD_DEFINITIONS(-std=c++11)
     SET(TARGET_OS "LINUX")
     SET(TARGET_OS_DIR "linux")
+ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    # ADD_DEFINITIONS(-D__macosx__)
+    ADD_DEFINITIONS(-std=c++11)
+    SET(TARGET_OS "OSX")
+    SET(TARGET_OS_DIR "macosx")
 ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Windows")
     IF(MSVC)
         ADD_DEFINITIONS(-DMSVC)
@@ -27,9 +34,13 @@ ELSEIF(CMAKE_SYSTEM_NAME MATCHES "Windows")
     ADD_DEFINITIONS(-D_WINDOWS)
     SET(TARGET_OS "WINDOWS")
     SET(TARGET_OS_DIR "windows")
-ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+ELSE()
+    message("System not supported, please add")
+ENDIF()
+message("System: ${TARGET_OS}")
 
 set(GAME_OUTPUT_DIR "${CMAKE_BINARY_DIR}/bin/${TARGET_OS_DIR}")
+
 
 macro (append_gameplay_lib listToAppend)
     set(libName gameplay)
@@ -48,25 +59,30 @@ macro (append_gameplay_lib listToAppend)
 			optimized ${${libName}_LIBRARY_RELEASE}
 		)
 	ELSE (TARGET_OS STREQUAL "WINDOWS")
-		find_library(FOUND_LIB_${libName} ${libName} HINTS
-			"${GAMEPLAY_SRC_PATH}/cmake/gameplay" "${GAMEPLAY_SRC_PATH}/build/gameplay" "${GAMEPLAY_SRC_PATH}/gameplay/src")
+		find_library(FOUND_LIB_${libName} ${libName}
+            HINTS
+    			"${GAMEPLAY_SRC_PATH}/cmake/gameplay"
+                "${GAMEPLAY_SRC_PATH}/build/gameplay"
+                "${GAMEPLAY_SRC_PATH}/gameplay/src")
 	ENDIF (TARGET_OS STREQUAL "WINDOWS")
 	set(${listToAppend} ${${listToAppend}} ${FOUND_LIB_${libName}})
+    message(STATUS "Gameplay library Found: ${FOUND_LIB_${libName}}")
 endmacro(append_gameplay_lib)
 
+
 macro (append_gameplay_ext_lib listToAppend libName libDirName)
-    string(TOLOWER ${CMAKE_SYSTEM_NAME} systemName)
     IF("${libDirName}" STREQUAL "")
 		find_library(FOUND_LIB_${libName} NAMES ${libName} ${ARGN})
     ELSE("${libDirName}" STREQUAL "")
         set(pathToSearch
-            "${GAMEPLAY_EXT_LIBS_PATH}/${systemName}/${ARCH_DEPS_DIR}")
+            "${GAMEPLAY_EXT_LIBS_PATH}/${TARGET_OS_DIR}/${ARCH_DEPS_DIR}")
+        message("Looking for deps in ${pathToSearch}")
 		find_library(FOUND_LIB_${libName} NAMES ${libName} ${ARGN} HINTS ${pathToSearch})
     ENDIF("${libDirName}" STREQUAL "")
-
     set(${listToAppend} ${${listToAppend}} ${FOUND_LIB_${libName}})
-    message(STATUS "Library Found: ${libName} Path: ${FOUND_LIB_${libName}}")
+    message(STATUS "Ext library Found: ${libName} Path: ${FOUND_LIB_${libName}}")
 endmacro (append_gameplay_ext_lib)
+
 
 macro(copy_files TARGET_NAME GLOBPAT SOURCE DESTINATION RECUR)
     get_filename_component(REALPATH_SOURCE ${SOURCE} REALPATH)
@@ -91,6 +107,7 @@ macro(copy_files TARGET_NAME GLOBPAT SOURCE DESTINATION RECUR)
   endforeach(FILENAME)
 endmacro(copy_files)
 
+
 include_directories( 
     ${GAMEPLAY_SRC_PATH}/gameplay/src
     ${GAMEPLAY_SRC_PATH}/external-deps/include
@@ -98,6 +115,7 @@ include_directories(
 
 append_gameplay_lib(GAMEPLAY_LIBRARIES)
 append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "gameplay-deps" "libs")
+message("Libs: ${GAMEPLAY_LIBRARIES}")
 
 IF (TARGET_OS STREQUAL "LINUX")
 	append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "GL" "")
@@ -110,10 +128,51 @@ IF (TARGET_OS STREQUAL "LINUX")
 	append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "gobject-2.0" "" )
 	append_gameplay_ext_lib(GAMEPLAY_LIBRARIES "glib-2.0" "" )
 
+ELSEIF (TARGET_OS STREQUAL "OSX")
+    # From Gameplay samples:
+    find_package(OpenGL REQUIRED)
+    FIND_LIBRARY(AGL_LIBRARY AGL)
+    FIND_LIBRARY(APP_SERVICES_LIBRARY ApplicationServices )
+    FIND_LIBRARY(ATBOX_LIBRARY AudioToolbox)
+    FIND_LIBRARY(CARBON_LIBRARY Carbon)
+    FIND_LIBRARY(CAUDIO_LIBRARY CoreAudio)
+    FIND_LIBRARY(COREVIDEO_LIBRARY CoreVideo)
+    FIND_LIBRARY(CFOUNDATION_LIBRARY CoreFoundation)
+    FIND_LIBRARY(CSERVICES_LIBRARY CoreServices)
+    FIND_LIBRARY(OPENGL_LIBRARY OpenGL)
+    FIND_LIBRARY(QUICKTIME_LIBRARY QuickTime )
+    FIND_LIBRARY(IOKIT_LIBRARY IOKit )
+    FIND_LIBRARY(AVF_LIBRARY AVFoundation)
+    FIND_LIBRARY(OAL_LIBRARY OpenAL)
+    FIND_LIBRARY(GKIT_LIBRARY GameKit)
+    SET(FRAMEWORK_LIBRS
+            ${AGL_LIBRARY}
+            ${APP_SERVICES_LIBRARY}
+            ${ATBOX_LIBRARY}
+            ${CARBON_LIBRARY}
+            ${CAUDIO_LIBRARY}
+            ${COREVIDEO_LIBRARY}
+            ${CFOUNDATION_LIBRARY}
+            ${CSERVICES_LIBRARY}
+            ${OAL_LIBRARY}
+            ${OPENGL_LIBRARIES}
+            ${GKIT_LIBRARY}
+            ${IOKIT_LIBRARY}
+            "-framework Foundation"
+            "-framework Cocoa")
+    link_directories(${GAMEPLAY_EXT_LIBS_PATH}/macosx/x86_64)
+    set(GAMEPLAY_LIBRARIES
+        ${GAMEPLAY_LIBRARIES}
+        stdc++
+        m
+        dl
+        pthread
+        ${FRAMEWORK_LIBRS})    
+    
 ELSEIF (TARGET_OS STREQUAL "WINDOWS")
 	set(GAMEPLAY_LIBRARIES ${GAMEPLAY_LIBRARIES} "OpenGL32")
 	set(GAMEPLAY_LIBRARIES ${GAMEPLAY_LIBRARIES} "GLU32")
-	ADD_DEFINITIONS(-D_ITERATOR_DEBUG_LEVEL=0)
+	ADD_DEFINITIONS(-D_ITERATOR_DEBUG_LEVEL=0)    
 ENDIF (TARGET_OS STREQUAL "LINUX")
 
 source_group(res FILES ${GAME_RES} ${GAMEPLAY_RES} ${GAME_RES_SHADERS} ${GAME_RES_SHADERS_LIB})
